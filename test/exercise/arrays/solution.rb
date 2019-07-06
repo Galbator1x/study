@@ -2,8 +2,16 @@ module Exercise
   module Arrays
     class << self
       def replace(array)
-        max_num = array.max
+        max_num = max(array)
         array.map { |num| num.positive? ? max_num : num }
+      end
+
+      def max(array)
+        max_num = array.first
+        array[1..-1].each do |num|
+          max_num = num if num > max_num
+        end
+        max_num
       end
 
       def search(array, query)
