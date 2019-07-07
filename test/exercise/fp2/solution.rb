@@ -6,41 +6,24 @@ module Exercise
 
       # Написать свою функцию my_each
       def my_each
-        iter = lambda do |array|
-          return self if array.size.zero?
+        func = ->(_, element) { yield(element) }
 
-          yield array.first
-          new_array = array[1..-1]
-          iter.call(new_array)
-        end
-
-        iter.call(self)
+        my_reduce(MyArray.new([]), &func)
+        self
       end
 
       # Написать свою функцию my_map
       def my_map
-        iter = lambda do |acc, array|
-          return acc if array.size.zero?
+        func = ->(acc, element) { acc << yield(element) }
 
-          acc << yield(array.first)
-          new_array = array[1..-1]
-          iter.call(acc, new_array)
-        end
-
-        iter.call(MyArray.new([]), dup)
+        my_reduce(MyArray.new([]), &func)
       end
 
       # Написать свою функцию my_compact
       def my_compact
-        iter = lambda do |acc, array|
-          return acc if array.size.zero?
+        func = ->(acc, element) { element.nil? ? acc : acc << element }
 
-          acc << array.first unless array.first.nil?
-          new_array = array[1..-1]
-          iter.call(acc, new_array)
-        end
-
-        iter.call(MyArray.new([]), self)
+        my_reduce(MyArray.new([]), &func)
       end
 
       # Написать свою функцию my_reduce
@@ -48,9 +31,9 @@ module Exercise
         iter = lambda do |acc, array|
           return acc if array.size.zero?
 
-          acc = yield(acc, array.first)
-          new_array = array[1..-1]
-          iter.call(acc, new_array)
+          first, *rest = *array
+          acc = yield(acc, first)
+          iter.call(acc, rest)
         end
 
         initial_array = initial.nil? ? self[1..-1] : self
